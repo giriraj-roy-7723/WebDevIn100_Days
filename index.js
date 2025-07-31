@@ -155,7 +155,8 @@ function fillTable() {
 
           ["Day 58", "Budget Tracker", "public/Budget-Tracker/index.html"],
 
-      ["Day70","Memory Game App","./public/Memory Game App/index.html"]
+      ["Day70","Memory Game App","./public/Memory Game App/index.html"],
+      ["Day71","Target Click Game","./public/Target Click Game/index.html"],
         
 
 
