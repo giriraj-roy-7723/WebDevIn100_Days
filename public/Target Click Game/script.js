@@ -2,6 +2,14 @@ const gameArea = document.getElementById("game-area");
 const hitsDisplay = document.getElementById("hits");
 const timeLeftDisplay = document.getElementById("time-left");
 const avgTimeDisplay = document.getElementById("avg-time");
+const levelDisplay = document.getElementById("level");
+
+const startScreen = document.getElementById("start-screen");
+const gameContainer = document.getElementById("game-container");
+const gameOverScreen = document.getElementById("game-over-screen");
+const finalLevel = document.getElementById("final-level");
+const finalHits = document.getElementById("final-hits");
+const finalAvg = document.getElementById("final-avg");
 
 let gameInterval;
 let spawnInterval;
@@ -9,6 +17,8 @@ let timeLeft = 30;
 let hits = 0;
 let totalReactionTime = 0;
 let currentTargetAppearedAt = 0;
+let level = 1;
+let targetSpeed = 1000;
 
 function getRandomPosition() {
   const maxX = gameArea.clientWidth - 60;
@@ -21,7 +31,6 @@ function getRandomPosition() {
 function spawnTarget() {
   const target = document.createElement("div");
   target.classList.add("target");
-
   const { x, y } = getRandomPosition();
   target.style.left = `${x}px`;
   target.style.top = `${y}px`;
@@ -40,34 +49,57 @@ function spawnTarget() {
   gameArea.appendChild(target);
 
   setTimeout(() => {
-    if (gameArea.contains(target)) {
-      target.remove();
-    }
-  }, 1000); // target disappears after 1 second
+    if (gameArea.contains(target)) target.remove();
+  }, targetSpeed);
 }
 
 function startGame() {
-  // Reset
+  startScreen.classList.add("hidden");
+  gameContainer.classList.remove("hidden");
+  level = 1;
   hits = 0;
-  timeLeft = 30;
+  timeLeft = 10;
   totalReactionTime = 0;
-  hitsDisplay.textContent = hits;
-  timeLeftDisplay.textContent = timeLeft;
-  avgTimeDisplay.textContent = 0;
+  targetSpeed = 1000;
+  updateDisplays();
   gameArea.innerHTML = "";
 
-  // Start spawning
   spawnInterval = setInterval(spawnTarget, 800);
 
-  // Countdown timer
   gameInterval = setInterval(() => {
     timeLeft--;
     timeLeftDisplay.textContent = timeLeft;
 
+    if (timeLeft % 10 === 0 && timeLeft !== 0) {
+      level++;
+      levelDisplay.textContent = level;
+      targetSpeed = Math.max(300, targetSpeed - 100);
+    }
+
     if (timeLeft <= 0) {
-      clearInterval(gameInterval);
-      clearInterval(spawnInterval);
-      alert(`Game Over! You hit ${hits} targets. Avg Reaction: ${Math.round(totalReactionTime / hits || 0)}ms`);
+      endGame();
     }
   }, 1000);
+}
+
+function updateDisplays() {
+  hitsDisplay.textContent = hits;
+  timeLeftDisplay.textContent = timeLeft;
+  avgTimeDisplay.textContent = 0;
+  levelDisplay.textContent = level;
+}
+
+function endGame() {
+  clearInterval(gameInterval);
+  clearInterval(spawnInterval);
+  gameContainer.classList.add("hidden");
+  gameOverScreen.classList.remove("hidden");
+  finalLevel.textContent = level;
+  finalHits.textContent = hits;
+  finalAvg.textContent = Math.round(totalReactionTime / hits || 0);
+}
+
+function restartGame() {
+  gameOverScreen.classList.add("hidden");
+  startScreen.classList.remove("hidden");
 }
